@@ -10,7 +10,6 @@ data class ClaimDTO(
     val providerCode: String,
     val providerName: String,
     val benefitType: String,
-    val payerCode: String,
     val claimDate: LocalDate,
     val invoiceNumber: String,
     val totalAmount: BigDecimal

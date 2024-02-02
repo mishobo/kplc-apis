@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 @Service
 @Transactional
@@ -19,6 +20,10 @@ class ClaimService(
         println("claim payload: $dto");
         val familyNumber = dto.memberNumber.split("-")
         val benefitType = if(dto.benefitType.contains("INPATIENT"))  "IP" else "OP"
+        val calendar = Calendar.getInstance()
+        val currentYear = calendar.get(Calendar.YEAR)
+
+        println(currentYear)
 
         var claim = Claim(
             claimNumber = dto.claimNumber,
@@ -28,10 +33,10 @@ class ClaimService(
             providerName = dto.providerName,
             beneficiaryCode = familyNumber[1],
             benefitType = benefitType,
-            payerCode = dto.payerCode,
-            claimDate = dto.claimDate,
+            invoiceDate = dto.claimDate,
             invoiceNumber = dto.invoiceNumber,
-            totalAmount = dto.totalAmount
+            totalAmount = dto.totalAmount,
+            year = currentYear.toString()
         )
 
         claimRepo.save(claim)

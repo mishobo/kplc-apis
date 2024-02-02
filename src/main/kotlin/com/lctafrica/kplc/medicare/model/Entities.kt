@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "claim")
@@ -19,11 +20,12 @@ data class Claim(
     val providerName: String,
     val beneficiaryCode: String,
     val benefitType: String,
-    val payerCode: String,
-    val claimDate: LocalDate,
+    val year: String,
+    val invoiceDate: LocalDate,
     val invoiceNumber: String,
     val totalAmount: BigDecimal,
-    var dateReceived: LocalDate = LocalDate.now()
+    var dateReceived: LocalDate = LocalDate.now(),
+    val timeStamp: LocalDateTime = LocalDateTime.now()
 )
 
 @Entity
