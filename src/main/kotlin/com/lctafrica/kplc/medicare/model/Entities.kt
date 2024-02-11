@@ -29,52 +29,23 @@ data class Claim(
 )
 
 @Entity
-@Table(name = "invoice")
-data class Invoice(
+@Table(name = "beneficiaries")
+data class Beneficiaries(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int = 0,
-    val invoiceNumber: String,
-    val invoiceUrl: String?=null,
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
-    val invoiceDate: LocalDate,
-    val total: BigDecimal,
-    @Enumerated(EnumType.STRING)
-    val status: Status,
-    @JsonIgnore
-    @ManyToOne
-    val claim: Claim,
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "invoice")
-    val items: Set<InvoiceLine> = mutableSetOf()
+    val id: Long = 0,
+    val createdBy: String,
+    val createdDate: String,
+    val memberNumber: String,
+    val memberName: String,
+    val gender: String,
+    val dob: String,
+    val phoneNo: String,
+    val status: String,
+    val scale: String,
+    val jobCategory: Int,
+    val newEntry: Boolean,
+    val updatedEntry: Boolean
 )
 
-@Entity
-@Table(name = "invoice_line")
-data class InvoiceLine(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val lineItemId: Int = 0,
-    @JsonIgnore
-    @ManyToOne
-    val invoice: Invoice,
-    val unit: BigDecimal,
-    val quantity: Int,
-    val amount: BigDecimal,
-    val description: String,
-    val itemName: String,
-    val serviceGroup: String? = "General"
-)
-
-@Entity
-@Table(name = "diagnosis")
-data class Diagnosis(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int = 0,
-    @JsonIgnore
-    @ManyToOne
-    val claim: Claim,
-    val icd10Code: String? = null,
-    val description: String? = null
-)
 
