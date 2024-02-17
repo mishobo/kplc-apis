@@ -45,7 +45,7 @@ data class Beneficiaries(
     val phoneNo: String?,
     val status: String,
     val scale: String,
-    val jobCategory: Int,
+    val jobCategory: Int?,
     val newEntry: Boolean,
     val updatedEntry: Boolean,
     val company: String

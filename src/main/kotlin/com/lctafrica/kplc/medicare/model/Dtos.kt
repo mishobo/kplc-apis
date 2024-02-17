@@ -14,3 +14,16 @@ data class ClaimDTO(
     val invoiceNumber: String,
     val totalAmount: BigDecimal
 )
+
+data class LctBeneficiaryDTO(
+    val categoryId: Long,
+    val name: String,
+    val memberNumber: String,
+    val nhifNumber: String?,
+    val dob: String,
+    val gender: String,
+    val phoneNumber: String?,
+    val email: String?,
+    val beneficiaryType: String,
+    val principalId: Long
+)

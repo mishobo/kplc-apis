@@ -14,6 +14,8 @@ interface IClaimService {
 interface IBeneficiary{
 
     fun getNewBeneficiaries(): ResponseEntity<List<Beneficiaries>>
+
+    fun uploadnewMembersToLCT()
 }
 
 interface IJobScales {
