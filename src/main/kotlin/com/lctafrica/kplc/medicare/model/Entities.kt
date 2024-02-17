@@ -37,15 +37,31 @@ data class Beneficiaries(
     val createdBy: String,
     val createdDate: String,
     val memberNumber: String,
+    val beneficiaryType: String,
+    val nationalId: String?,
     val memberName: String,
     val gender: String,
     val dob: String,
-    val phoneNo: String,
+    val phoneNo: String?,
     val status: String,
     val scale: String,
     val jobCategory: Int,
     val newEntry: Boolean,
-    val updatedEntry: Boolean
+    val updatedEntry: Boolean,
+    val company: String
 )
+@Entity
+@Table(name = "jobScale")
+data class JobScale(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0,
+    val scale: String,
+    val description: String,
+    val outPatientLimit: BigDecimal,
+    val inPatientLimit: BigDecimal,
+    val jobCategory: Int,
+    val lctCategoryId: Int
 
+)
 
