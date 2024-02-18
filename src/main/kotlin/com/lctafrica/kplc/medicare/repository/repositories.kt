@@ -11,6 +11,10 @@ interface BeneficiaryRepo: JpaRepository<Beneficiaries, Long> {
 
     fun findByNewEntry(newEntry: Boolean): List<Beneficiaries>?
 
+
 }
 
-interface JobScaleRepo: JpaRepository<JobScale, Long>
+interface JobScaleRepo: JpaRepository<JobScale, Long>{
+
+    fun findByScale(scale: String): JobScale
+}

@@ -5,10 +5,18 @@ spring:
     url: jdbc:oracle:thin:@172.16.3.28:1522/FREEPDB1
     username: SYSTEM
     password: 31875595
+    hikari:
+      minimumIdle: 5
+      maximumPoolSize: 20
+      idleTimeout: 30000
+      maxLifetime: 2000000
+      connectionTimeout: 30000
+      poolName: HikariPoolKPLCStaff
   jpa:
     hibernate:
       ddl-auto: update
-#    show-sql: false
+      use-new-id-generator-mappings: false
 
-## RUN PROJECT
-## mvn spring-boot:run
+lct:
+  africa:
+    membership: http://localhost:8070/api/v1/membership/beneficiaries

@@ -17,18 +17,6 @@ spring:
       ddl-auto: update
       use-new-id-generator-mappings: false
 
-# JPA settings
-#  spring.jpa.database-platform=org.hibernate.dialect.Oracle12cDialect
-#  spring.jpa.hibernate.use-new-id-generator-mappings=false
-#  spring.jpa.hibernate.ddl-auto=create
-
-## RUN PROJECT
-## mvn spring-boot:run
-
-
-#  spring.datasource.hikari.minimumIdle=5
-#  spring.datasource.hikari.maximumPoolSize=20
-#  spring.datasource.hikari.idleTimeout=30000
-#  spring.datasource.hikari.maxLifetime=2000000
-#  spring.datasource.hikari.connectionTimeout=30000
-#  spring.datasource.hikari.poolName=HikariPoolBooks
+lct:
+  africa:
+    membership: http://localhost:8070/api/v1/membership/beneficiaries

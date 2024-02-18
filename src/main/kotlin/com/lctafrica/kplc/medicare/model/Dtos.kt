@@ -27,3 +27,19 @@ data class LctBeneficiaryDTO(
     val beneficiaryType: String,
     val principalId: Long
 )
+
+data class BeneficiaryResponse(
+    val success: Boolean,
+    val msg: String,
+    val data: Beneficiary
+
+)
+
+data class Beneficiary(
+    val id: Long,
+    val name: String,
+    val memberNumber: String,
+    val dob: String,
+    val gender: String,
+    val beneficiaryType: String,
+)

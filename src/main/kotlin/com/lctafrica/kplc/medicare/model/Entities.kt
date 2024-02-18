@@ -48,7 +48,9 @@ data class Beneficiaries(
     val jobCategory: Int?,
     val newEntry: Boolean,
     val updatedEntry: Boolean,
-    val company: String
+    val company: String,
+    @Column(name = "lct_principal_id", nullable = true)
+    val lctPrincipalId: Long? = 0
 )
 @Entity
 @Table(name = "jobScale")
