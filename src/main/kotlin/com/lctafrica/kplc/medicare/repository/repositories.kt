@@ -12,7 +12,7 @@ interface ClaimRepo: JpaRepository<Claim, Int> {}
 
 interface BeneficiaryRepo: JpaRepository<Beneficiaries, Long> {
 
-    fun findByNewEntry(newEntry: Boolean): List<Beneficiaries>?
+    fun findByNewEntryAndScaleIsNotNull(newEntry: Boolean): List<Beneficiaries>?
 
     @Modifying
     @Query(value = "update Beneficiaries b set b.newEntry = false where b.memberNumber = :memberNo")

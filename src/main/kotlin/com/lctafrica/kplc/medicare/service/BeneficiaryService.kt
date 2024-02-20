@@ -33,7 +33,7 @@ class BeneficiaryService(
     val gson = Gson()
 
     override fun getNewBeneficiaries(): ResponseEntity<List<Beneficiaries>> {
-        val beneficiaries = beneficiaryRepo.findByNewEntry(true)
+        val beneficiaries = beneficiaryRepo.findByNewEntryAndScaleIsNotNull(true)
         println("beneficiaries: $beneficiaries")
         return ResponseEntity(beneficiaries, HttpStatus.OK)
     }
@@ -68,7 +68,7 @@ class BeneficiaryService(
 
     @Scheduled(cron = "* * * * * ?")
     override fun uploadnewMembersToLCT(){
-        val beneficiaries = beneficiaryRepo.findByNewEntry(true)
+        val beneficiaries = beneficiaryRepo.findByNewEntryAndScaleIsNotNull(true)
 
         beneficiaries?.forEach {
             val jobScale = jobScaleRepo.findByScale(it.scale)
