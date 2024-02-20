@@ -27,18 +27,53 @@ class BeneficiaryService(
     @Value("\${lct.africa.membership}")
     lateinit var memberShipUrl: String
 
+    @Value("\${lct.africa.membershipByCategoryId}")
+    lateinit var memberByCategoryIdAndMbrNo: String
+
+    val gson = Gson()
+
     override fun getNewBeneficiaries(): ResponseEntity<List<Beneficiaries>> {
         val beneficiaries = beneficiaryRepo.findByNewEntry(true)
         println("beneficiaries: $beneficiaries")
         return ResponseEntity(beneficiaries, HttpStatus.OK)
     }
 
+    fun getLCTPrincipleId(memberNo: String, categoryId: Long): Long {
+        val familyNumber = memberNo.split("-")
+        val principalNumber = familyNumber[0] + "-00"
+        println("principalNumber: $principalNumber")
+        val membershipClient = WebClient.builder().baseUrl(memberByCategoryIdAndMbrNo).build()
+        val membershipResponse1 = membershipClient
+            .get()
+            .uri { u ->
+                u
+                    .queryParam("categoryId", categoryId)
+                    .queryParam("memberNumber", principalNumber)
+                    .build()
+            }
+            .retrieve()
+            .bodyToMono(String::class.java)
+            .block()
+
+        println("response: $membershipResponse1")
+        val response = gson.fromJson(membershipResponse1.toString(), BeneficiaryResponse::class.java)
+
+        if (!response.success){
+            return 0
+        }
+
+        return response.data.id
+    }
+
 
     @Scheduled(cron = "* * * * * ?")
     override fun uploadnewMembersToLCT(){
         val beneficiaries = beneficiaryRepo.findByNewEntry(true)
+
         beneficiaries?.forEach {
             val jobScale = jobScaleRepo.findByScale(it.scale)
+            val principalId = getLCTPrincipleId(it.memberNumber, jobScale.lctCategoryId.toLong())
+            println("principalId: $principalId")
             val staff = LctBeneficiaryDTO(
                 categoryId = jobScale.lctCategoryId.toLong(),
                 name = it.memberName,
@@ -49,7 +84,7 @@ class BeneficiaryService(
                 gender = it.gender,
                 phoneNumber = it.phoneNo,
                 beneficiaryType = it.beneficiaryType,
-                principalId = 0
+                principalId = principalId
             )
             apiCallForNewStaff(staff)
         }
@@ -73,10 +108,27 @@ class BeneficiaryService(
 
         if (memberShipResponse.success){
             println("principle id: " + memberShipResponse.data.id)
+            beneficiaryRepo.updateNewEntry(dto.memberNumber)
+
+        } else {
+            val membershipClient = WebClient.builder().baseUrl(memberByCategoryIdAndMbrNo).build()
+            val membershipResponse1 = membershipClient
+                .get()
+                .uri { u ->
+                    u
+                        .queryParam("categoryId", dto.categoryId)
+                        .queryParam("memberNumber", dto.memberNumber)
+                        .build()
+                }
+                .retrieve()
+                .bodyToMono(String::class.java)
+                .block()
+
+            val response = gson.fromJson(membershipResponse1.toString(), BeneficiaryResponse::class.java)
+            if (response.success){
+                beneficiaryRepo.updateNewEntry(dto.memberNumber)
+            }
         }
-
-
-
     }
 
 }

@@ -20,3 +20,4 @@ spring:
 lct:
   africa:
     membership: http://localhost:8070/api/v1/membership/beneficiaries
+    membershipByCategoryId: http://localhost:8070/api/v1/membership/beneficiary/findByCategoryAndMemberNumber
