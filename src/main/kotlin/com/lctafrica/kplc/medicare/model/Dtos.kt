@@ -42,4 +42,13 @@ data class Beneficiary(
     val dob: String,
     val gender: String,
     val beneficiaryType: String,
+    val status: String
+)
+
+data class BeneficiaryStatusDTO(
+    val beneficiaryIds: List<Long>,
+    val reason: String,
+    val updateBy: String,
+    val status: String,
+    val updateType: String
 )

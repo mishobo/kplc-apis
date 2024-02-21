@@ -3,6 +3,7 @@ package com.lctafrica.kplc.medicare.service
 import com.google.gson.Gson
 import com.lctafrica.kplc.medicare.model.Beneficiaries
 import com.lctafrica.kplc.medicare.model.BeneficiaryResponse
+import com.lctafrica.kplc.medicare.model.BeneficiaryStatusDTO
 import com.lctafrica.kplc.medicare.model.LctBeneficiaryDTO
 import com.lctafrica.kplc.medicare.repository.BeneficiaryRepo
 import com.lctafrica.kplc.medicare.repository.JobScaleRepo
@@ -29,6 +30,11 @@ class BeneficiaryService(
 
     @Value("\${lct.africa.membershipByCategoryId}")
     lateinit var memberByCategoryIdAndMbrNo: String
+
+    @Value("\${lct.africa.membershipStatusUpdate}")
+    lateinit var membershipStatusUpdate: String
+
+
 
     val gson = Gson()
 
@@ -67,7 +73,7 @@ class BeneficiaryService(
 
 
     @Scheduled(cron = "* * * * * ?")
-    override fun uploadnewMembersToLCT(){
+    override fun uploadNewMembersToLCT(){
         val beneficiaries = beneficiaryRepo.findByNewEntryAndScaleIsNotNull(true)
 
         beneficiaries?.forEach {
@@ -108,7 +114,7 @@ class BeneficiaryService(
 
         if (memberShipResponse.success){
             println("principle id: " + memberShipResponse.data.id)
-            beneficiaryRepo.updateNewEntry(dto.memberNumber)
+            beneficiaryRepo.updateNewEntry(dto.memberNumber, dto.categoryId)
 
         } else {
             val membershipClient = WebClient.builder().baseUrl(memberByCategoryIdAndMbrNo).build()
@@ -126,9 +132,68 @@ class BeneficiaryService(
 
             val response = gson.fromJson(membershipResponse1.toString(), BeneficiaryResponse::class.java)
             if (response.success){
-                beneficiaryRepo.updateNewEntry(dto.memberNumber)
+                beneficiaryRepo.updateNewEntry(dto.memberNumber, dto.categoryId)
             }
         }
+    }
+
+    fun getLCTMemberDetails(memberNo: String, categoryId: Long): BeneficiaryResponse {
+        val membershipClient = WebClient.builder().baseUrl(memberByCategoryIdAndMbrNo).build()
+        val membershipResponse1 = membershipClient
+            .get()
+            .uri { u ->
+                u
+                    .queryParam("categoryId", categoryId)
+                    .queryParam("memberNumber", memberNo)
+                    .build()
+            }
+            .retrieve()
+            .bodyToMono(String::class.java)
+            .block()
+
+        println("membershipResponse1: $membershipResponse1")
+        return gson.fromJson(membershipResponse1.toString(), BeneficiaryResponse::class.java)
+    }
+
+    fun updateStaffStatusAPICall(dto: BeneficiaryStatusDTO): Boolean{
+        val gson = Gson()
+        var staffJson = gson.toJson(dto)
+        println("staff json payload :$staffJson" )
+
+        val kplcClient = WebClient.builder().baseUrl(membershipStatusUpdate).build()
+        val remoteResponse = kplcClient.post()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .body(Mono.just(staffJson), String::class.java)
+            .retrieve()
+            .bodyToMono(String::class.java)
+            .block()
+
+        println(remoteResponse)
+        val memberShipResponse = gson.fromJson(remoteResponse.toString(), BeneficiaryResponse::class.java)
+
+        return memberShipResponse.success
+    }
+    @Scheduled(cron = "* * * * * ?")
+    override fun pickUpdatedRecords() {
+        val updatedStaff = beneficiaryRepo.findByUpdatedEntryAndScaleIsNotNull(true)
+
+        updatedStaff?.forEach {
+            println("updated: $it")
+                val member = getLCTMemberDetails(it.memberNumber, it.lctCategoryId)
+
+            val statusDTO = BeneficiaryStatusDTO(
+                beneficiaryIds = arrayListOf(member.data.id),
+                reason = if (it.status == "DEACTIVATED") "FORMER" else "ACTIVATE",
+                updateBy = it.createdBy,
+                status = it.status,
+                updateType = "INDIVIDUAL"
+            )
+
+            if(updateStaffStatusAPICall(statusDTO)){
+                beneficiaryRepo.updateMemberStatus(it.memberNumber)
+            }
+        }
+
     }
 
 }

@@ -50,7 +50,8 @@ data class Beneficiaries(
     val updatedEntry: Boolean,
     val company: String,
     @Column(name = "lct_principal_id", nullable = true)
-    val lctPrincipalId: Long? = 0
+    val lctPrincipalId: Long? = 0,
+    val lctCategoryId: Long
 )
 @Entity
 @Table(name = "jobScale")

@@ -15,7 +15,9 @@ interface IBeneficiary{
 
     fun getNewBeneficiaries(): ResponseEntity<List<Beneficiaries>>
 
-    fun uploadnewMembersToLCT()
+    fun uploadNewMembersToLCT()
+
+    fun pickUpdatedRecords()
 }
 
 interface IJobScales {

@@ -15,8 +15,13 @@ interface BeneficiaryRepo: JpaRepository<Beneficiaries, Long> {
     fun findByNewEntryAndScaleIsNotNull(newEntry: Boolean): List<Beneficiaries>?
 
     @Modifying
-    @Query(value = "update Beneficiaries b set b.newEntry = false where b.memberNumber = :memberNo")
-    fun updateNewEntry(@Param("memberNo") memberNo: String)
+    @Query(value = "update Beneficiaries b set b.newEntry = false, b.lctCategoryId = :categoryId where b.memberNumber = :memberNo")
+    fun updateNewEntry(@Param("memberNo") memberNo: String, @Param("categoryId") categoryId: Long)
+    @Modifying
+    @Query(value = "update Beneficiaries b set b.updatedEntry = false where b.memberNumber = :memberNo")
+    fun updateMemberStatus(@Param("memberNo") memberNo: String)
+
+    fun findByUpdatedEntryAndScaleIsNotNull(newEntry: Boolean): List<Beneficiaries>?
 
 }
 
