@@ -34,8 +34,6 @@ class BeneficiaryService(
     @Value("\${lct.africa.membershipStatusUpdate}")
     lateinit var membershipStatusUpdate: String
 
-
-
     val gson = Gson()
 
     override fun getNewBeneficiaries(): ResponseEntity<List<Beneficiaries>> {
