@@ -75,7 +75,7 @@ class BeneficiaryService(
         val beneficiaries = beneficiaryRepo.findByNewEntryAndScaleIsNotNull(true)
 
         beneficiaries?.forEach {
-            val jobScale = jobScaleRepo.findByScale(it.scale)
+            val jobScale = jobScaleRepo.findByScaleAndCompany(it.scale, it.company)
             val principalId = getLCTPrincipleId(it.memberNumber, jobScale.lctCategoryId.toLong())
             println("principalId: $principalId")
             val staff = LctBeneficiaryDTO(
@@ -177,14 +177,15 @@ class BeneficiaryService(
 
         updatedStaff?.forEach {
             println("updated: $it")
-                val member = getLCTMemberDetails(it.memberNumber, it.lctCategoryId)
+            val categoryId = jobScaleRepo.findByScaleAndCompany(it.scale, it.company)
+            val member = getLCTMemberDetails(it.memberNumber, categoryId.lctCategoryId.toLong())
 
             val statusDTO = BeneficiaryStatusDTO(
                 beneficiaryIds = arrayListOf(member.data.id),
                 reason = if (it.status == "DEACTIVATED") "FORMER" else "ACTIVATE",
                 updateBy = it.createdBy,
                 status = it.status,
-                updateType = "INDIVIDUAL"
+                updateType = if (it.beneficiaryType == "PRINCIPAL") "FAMILY" else "INDIVIDUAL"
             )
 
             if(updateStaffStatusAPICall(statusDTO)){

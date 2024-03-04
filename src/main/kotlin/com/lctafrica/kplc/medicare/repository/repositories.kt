@@ -27,5 +27,5 @@ interface BeneficiaryRepo: JpaRepository<Beneficiaries, Long> {
 
 interface JobScaleRepo: JpaRepository<JobScale, Long>{
 
-    fun findByScale(scale: String): JobScale
+    fun findByScaleAndCompany(scale: String, company: String): JobScale
 }

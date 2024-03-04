@@ -51,7 +51,7 @@ data class Beneficiaries(
     val company: String,
     @Column(name = "lct_principal_id", nullable = true)
     val lctPrincipalId: Long? = 0,
-    val lctCategoryId: Long
+    val lctCategoryId: Long?
 )
 @Entity
 @Table(name = "jobScale")
@@ -64,7 +64,8 @@ data class JobScale(
     val outPatientLimit: BigDecimal,
     val inPatientLimit: BigDecimal,
     val jobCategory: Int,
-    val lctCategoryId: Int
+    val lctCategoryId: Int,
+    val company: String
 
 )
 
