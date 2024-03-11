@@ -12,7 +12,8 @@ data class ClaimDTO(
     val benefitType: String,
     val claimDate: LocalDate,
     val invoiceNumber: String,
-    val totalAmount: BigDecimal
+    val totalAmount: BigDecimal,
+    val batchId: Long
 )
 
 data class LctBeneficiaryDTO(

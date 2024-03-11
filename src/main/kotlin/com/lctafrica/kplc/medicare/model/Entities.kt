@@ -24,8 +24,10 @@ data class Claim(
     val invoiceDate: LocalDate,
     val invoiceNumber: String,
     val totalAmount: BigDecimal,
-    var dateReceived: LocalDate = LocalDate.now(),
-    val timeStamp: LocalDateTime = LocalDateTime.now()
+    val dateReceived: LocalDate = LocalDate.now(),
+    val timeStamp: LocalDateTime = LocalDateTime.now(),
+    val batchId: Long
+
 )
 
 @Entity

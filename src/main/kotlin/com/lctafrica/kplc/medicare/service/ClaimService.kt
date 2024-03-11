@@ -36,7 +36,8 @@ class ClaimService(
             invoiceDate = dto.claimDate,
             invoiceNumber = dto.invoiceNumber,
             totalAmount = dto.totalAmount,
-            year = currentYear.toString()
+            year = currentYear.toString(),
+            batchId = dto.batchId
         )
 
         claimRepo.save(claim)
