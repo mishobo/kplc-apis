@@ -1,7 +1,18 @@
 package com.lctafrica.kplc.medicare.model
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.time.LocalDate
+
+
+data class ApiResponse<T>(
+    @JsonProperty("data")
+    val data: T?,
+    @JsonProperty("msg")
+    val msg: String?,
+    @JsonProperty("success")
+    val success: Boolean
+)
 
 data class ClaimDTO(
     val claimNumber: Long,
