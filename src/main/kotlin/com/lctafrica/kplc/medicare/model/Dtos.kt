@@ -20,6 +20,7 @@ data class Claims(
 
 data class ClaimDTO(
     val claimNumber: Long,
+    val invoiceId: Long,
     val memberNumber: String,
     val memberName: String,
     val providerCode: String,

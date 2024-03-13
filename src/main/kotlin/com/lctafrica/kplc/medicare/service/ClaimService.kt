@@ -21,9 +21,13 @@ class ClaimService(
     override fun createClaim(dto: Claims): ApiResponse<List<Claim>> {
         try {
             val claims = mutableListOf<Claim>()
-
             dto.claims.forEach { it ->
                 println("claim payload: $dto");
+                val invoice = claimRepo.findByInvoiceId(it.invoiceId)
+                if(invoice.isPresent){
+                    return ApiResponse(success = true, data = null, msg = "${it.invoiceId} invoice already received")
+                }
+
                 val familyNumber = it.memberNumber.split("-")
                 val benefitType = if(it.benefitType.contains("INPATIENT"))  "IP" else "OP"
                 val calendar = Calendar.getInstance()
@@ -31,8 +35,9 @@ class ClaimService(
 
                 println(currentYear)
 
-                var claim = Claim(
+                val claim = Claim(
                     claimNumber = it.claimNumber,
+                    invoiceId = it.invoiceId,
                     memberNumber = familyNumber[0],
                     memberName = it.memberName,
                     providerCode = it.providerCode,
