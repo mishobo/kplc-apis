@@ -1,6 +1,7 @@
 package com.lctafrica.kplc.medicare.controller
 
 import com.lctafrica.kplc.medicare.model.ClaimDTO
+import com.lctafrica.kplc.medicare.model.Claims
 import com.lctafrica.kplc.medicare.service.IClaimService
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.web.bind.annotation.GetMapping
@@ -18,7 +19,7 @@ class ClaimController(
 
     @Operation(summary = "receive claim from lct")
     @PostMapping(value = ["/claim"])
-    fun createClaim(@RequestBody dto: ClaimDTO) = claimService.createClaim(dto)
+    fun createClaim(@RequestBody dto: Claims) = claimService.createClaim(dto)
 
     @GetMapping(value = ["/claims"])
     fun findAllClaims() = claimService.findAllClaims()

@@ -14,6 +14,10 @@ data class ApiResponse<T>(
     val success: Boolean
 )
 
+data class Claims(
+    val claims: List<ClaimDTO>
+)
+
 data class ClaimDTO(
     val claimNumber: Long,
     val memberNumber: String,

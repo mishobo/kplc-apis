@@ -4,7 +4,7 @@ import com.lctafrica.kplc.medicare.model.*
 import org.springframework.http.ResponseEntity
 
 interface IClaimService {
-    fun createClaim(dto: ClaimDTO): ApiResponse<Claim>
+    fun createClaim(dto: Claims): ApiResponse<List<Claim>>
     fun findAllClaims(): ResponseEntity<List<Claim>>
 }
 

@@ -3,6 +3,7 @@ package com.lctafrica.kplc.medicare.service
 import com.lctafrica.kplc.medicare.model.ApiResponse
 import com.lctafrica.kplc.medicare.model.Claim
 import com.lctafrica.kplc.medicare.model.ClaimDTO
+import com.lctafrica.kplc.medicare.model.Claims
 import com.lctafrica.kplc.medicare.repository.ClaimRepo
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
@@ -17,33 +18,39 @@ class ClaimService(
     val claimRepo: ClaimRepo,
 ): IClaimService {
 
-    override fun createClaim(dto: ClaimDTO): ApiResponse<Claim> {
+    override fun createClaim(dto: Claims): ApiResponse<List<Claim>> {
         try {
-            println("claim payload: $dto");
-            val familyNumber = dto.memberNumber.split("-")
-            val benefitType = if(dto.benefitType.contains("INPATIENT"))  "IP" else "OP"
-            val calendar = Calendar.getInstance()
-            val currentYear = calendar.get(Calendar.YEAR)
+            val claims = mutableListOf<Claim>()
 
-            println(currentYear)
+            dto.claims.forEach { it ->
+                println("claim payload: $dto");
+                val familyNumber = it.memberNumber.split("-")
+                val benefitType = if(it.benefitType.contains("INPATIENT"))  "IP" else "OP"
+                val calendar = Calendar.getInstance()
+                val currentYear = calendar.get(Calendar.YEAR)
 
-            var claim = Claim(
-                claimNumber = dto.claimNumber,
-                memberNumber = familyNumber[0],
-                memberName = dto.memberName,
-                providerCode = dto.providerCode,
-                providerName = dto.providerName,
-                beneficiaryCode = familyNumber[1],
-                benefitType = benefitType,
-                invoiceDate = dto.claimDate,
-                invoiceNumber = dto.invoiceNumber,
-                totalAmount = dto.totalAmount,
-                year = currentYear.toString(),
-                batchId = dto.batchId
-            )
+                println(currentYear)
 
-            claimRepo.save(claim)
-            return ApiResponse(success = true, data = claim, msg = "claim saved successfully")
+                var claim = Claim(
+                    claimNumber = it.claimNumber,
+                    memberNumber = familyNumber[0],
+                    memberName = it.memberName,
+                    providerCode = it.providerCode,
+                    providerName = it.providerName,
+                    beneficiaryCode = familyNumber[1],
+                    benefitType = benefitType,
+                    invoiceDate = it.claimDate,
+                    invoiceNumber = it.invoiceNumber,
+                    totalAmount = it.totalAmount,
+                    year = currentYear.toString(),
+                    batchId = it.batchId
+                )
+                claimRepo.save(claim)
+                claims.add(claim)
+            }
+
+
+            return ApiResponse(success = true, data = claims, msg = "claim saved successfully")
         }catch (ex: Exception){
             return ApiResponse(success = true, data = null, msg = "failed to save claim")
         }
