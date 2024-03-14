@@ -25,7 +25,7 @@ class ClaimService(
                 println("claim payload: $dto");
                 val invoice = claimRepo.findByInvoiceId(it.invoiceId)
                 if(invoice.isPresent){
-                    return ApiResponse(success = true, data = null, msg = "${it.invoiceId} invoice already received")
+                    return ApiResponse(success = false, data = null, msg = "${it.invoiceId} invoice already received")
                 }
 
                 val familyNumber = it.memberNumber.split("-")
