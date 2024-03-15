@@ -95,8 +95,10 @@ class BeneficiaryService(
     }
 
     fun apiCallForNewStaff(dto: LctBeneficiaryDTO){
+        val members = mutableListOf<LctBeneficiaryDTO>()
+        members.add(dto)
         val gson = Gson()
-        var staffJson = gson.toJson(dto)
+        var staffJson = gson.toJson(members)
         println("staff json payload :$staffJson" )
 
         val kplcClient = WebClient.builder().baseUrl(memberShipUrl).build()
