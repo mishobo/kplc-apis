@@ -29,7 +29,7 @@ data class ClaimDTO(
     val claimDate: LocalDate,
     val invoiceNumber: String,
     val totalAmount: BigDecimal,
-    val batchId: Long
+    val batchId: Long?
 )
 
 data class LctBeneficiaryDTO(

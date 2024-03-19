@@ -27,7 +27,7 @@ data class Claim(
     val totalAmount: BigDecimal,
     val dateReceived: LocalDate = LocalDate.now(),
     val timeStamp: LocalDateTime = LocalDateTime.now(),
-    val batchId: Long
+    val batchId: Long?
 
 )
 
@@ -69,6 +69,28 @@ data class JobScale(
     val jobCategory: Int,
     val lctCategoryId: Int,
     val company: String
-
+)
+@Entity
+@Table(name = "table_maintenance")
+data class TableMaintenance(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0,
+    @Column(name = "user1", nullable = false)
+    val user1: String,
+    @Column(name = "date_act", nullable = false)
+    val dateAct: LocalDate,
+    @Column(name = "time_act", nullable = false)
+    val timeAct: LocalDate,
+    @Column(name = "table_code", nullable = false)
+    val tableCode: String,
+    @Column(name = "main_code", nullable = false)
+    val mainCode: String,
+    @Column(name = "secondary_code", nullable = true)
+    val secondaryCode: String? = null,
+    @Column(name = "description", nullable = false)
+    val description: String,
+    @Column(name = "other_attributes", nullable = false)
+    val otherAttributes: String
 )
 

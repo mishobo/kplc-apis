@@ -19,6 +19,7 @@ spring:
 
 lct:
   africa:
-    membership: http://localhost:8070/api/v1/membership/staged/beneficiary
+    membership: http://localhost:8070/api/v1/membership/beneficiaries
+    membership1: http://localhost:8070/api/v1/membership/staged/beneficiary
     membershipByCategoryId: http://localhost:8070/api/v1/membership/beneficiary/findByCategoryAndMemberNumber
     membershipStatusUpdate: http://localhost:8070/api/v1/membership/beneficiaries/status/update

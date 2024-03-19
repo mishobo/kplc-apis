@@ -95,6 +95,47 @@ class BeneficiaryService(
     }
 
     fun apiCallForNewStaff(dto: LctBeneficiaryDTO){
+        val gson = Gson()
+        var staffJson = gson.toJson(dto)
+        println("staff json payload :$staffJson" )
+
+        val kplcClient = WebClient.builder().baseUrl(memberShipUrl).build()
+        val remoteResponse = kplcClient.post()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .body(Mono.just(staffJson), String::class.java)
+            .retrieve()
+            .bodyToMono(String::class.java)
+            .block()
+
+        println(remoteResponse)
+        val memberShipResponse = gson.fromJson(remoteResponse.toString(), BeneficiaryResponse::class.java)
+
+        if (memberShipResponse.success){
+            println("principle id: " + memberShipResponse.data.id)
+            beneficiaryRepo.updateNewEntry(dto.memberNumber, dto.categoryId)
+
+        } else {
+            val membershipClient = WebClient.builder().baseUrl(memberByCategoryIdAndMbrNo).build()
+            val membershipResponse1 = membershipClient
+                .get()
+                .uri { u ->
+                    u
+                        .queryParam("categoryId", dto.categoryId)
+                        .queryParam("memberNumber", dto.memberNumber)
+                        .build()
+                }
+                .retrieve()
+                .bodyToMono(String::class.java)
+                .block()
+
+            val response = gson.fromJson(membershipResponse1.toString(), BeneficiaryResponse::class.java)
+            if (response.success){
+                beneficiaryRepo.updateNewEntry(dto.memberNumber, dto.categoryId)
+            }
+        }
+    }
+
+    fun apiCallForNewStaff1(dto: LctBeneficiaryDTO){
         val members = mutableListOf<LctBeneficiaryDTO>()
         members.add(dto)
         val gson = Gson()
