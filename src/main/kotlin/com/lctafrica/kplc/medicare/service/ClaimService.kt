@@ -66,7 +66,7 @@ class ClaimService(
         if (claims.isNotEmpty()){
             return ResponseEntity(claims, HttpStatus.OK)
         } else {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            return ResponseEntity(claims, HttpStatus.OK)
         }
     }
 

@@ -18,10 +18,10 @@ class ClaimController(
 ) {
 
     @Operation(summary = "receive claim from lct")
-    @PostMapping(value = ["/claim"])
+    @PostMapping(value = ["/claim"], produces = ["application/json"] , consumes = ["application/json"])
     fun createClaim(@RequestBody dto: Claims) = claimService.createClaim(dto)
 
-    @GetMapping(value = ["/claims"])
+    @GetMapping(value = ["/claims"], produces = ["application/json"])
     fun findAllClaims() = claimService.findAllClaims()
 
 

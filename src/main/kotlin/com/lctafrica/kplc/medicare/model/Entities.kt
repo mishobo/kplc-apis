@@ -49,7 +49,7 @@ data class Beneficiaries(
     val status: String,
     val scale: String,
     val jobCategory: Int?,
-    val newEntry: Boolean,
+    val newEntry: Boolean = false,
     val updatedEntry: Boolean,
     val company: String,
     @Column(name = "lct_principal_id", nullable = true)
