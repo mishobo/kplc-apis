@@ -19,7 +19,9 @@ spring:
 
 lct:
   africa:
-    membership: http://192.168.0.32:8070/api/v1/membership/beneficiaries
-    membership1: http://192.168.0.32:8070/api/v1/membership/staged/beneficiary
-    membershipByCategoryId: http://192.168.0.32:8070/api/v1/membership/beneficiary/findByCategoryAndMemberNumber
-    membershipStatusUpdate: http://192.168.0.32:8070/api/v1/membership/beneficiaries/status/update
+    membership: https://api.lctafrica.net/api/v1/membership/create-member
+    membership2: https://api.lctafrica.net/api/v1/membership/beneficiaries
+    membership1: https://api.lctafrica.net/api/v1/membership/staged/beneficiary
+    membershipByCategoryId1: https://api.lctafrica.net/api/v1/membership/beneficiary/findByCategoryAndMemberNumber
+    membershipByCategoryId: https://api.lctafrica.net/api/v1/membership/beneficiary/findByCategoryAndMemberNumber
+    membershipStatusUpdate: https://api.lctafrica.net/api/v1/membership/beneficiaries/status/update

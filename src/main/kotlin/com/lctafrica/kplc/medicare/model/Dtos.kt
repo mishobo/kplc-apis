@@ -49,7 +49,6 @@ data class BeneficiaryResponse(
     val success: Boolean,
     val msg: String,
     val data: Beneficiary
-
 )
 
 data class Beneficiary(

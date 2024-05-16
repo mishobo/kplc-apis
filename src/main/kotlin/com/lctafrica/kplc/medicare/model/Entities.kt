@@ -14,6 +14,7 @@ data class Claim(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int = 0,
     val claimNumber: Long,
+    @Column(unique=true)
     val invoiceId: Long,
     val memberNumber: String,
     val memberName: String,

@@ -18,44 +18,39 @@ class ClaimService(
     val claimRepo: ClaimRepo,
 ): IClaimService {
 
-    override fun createClaim(dto: Claims): ApiResponse<List<Claim>> {
+    override fun createClaim(dto: ClaimDTO): ApiResponse<Claim> {
         try {
-            val claims = mutableListOf<Claim>()
-            dto.claims.forEach { it ->
                 println("claim payload: $dto");
-                val invoice = claimRepo.findByInvoiceId(it.invoiceId)
+                val invoice = claimRepo.findByInvoiceId(dto.invoiceId)
                 if(invoice.isPresent){
-                    return ApiResponse(success = false, data = null, msg = "${it.invoiceId} invoice already received")
+                    return ApiResponse(success = false, data = null, msg = "${dto.invoiceId} invoice already received")
                 }
 
-                val familyNumber = it.memberNumber.split("-")
-                val benefitType = if(it.benefitType.contains("INPATIENT"))  "IP" else "OP"
+                val familyNumber = dto.memberNumber.split("-")
+                val benefitType = if(dto.benefitType.contains("INPATIENT"))  "IP" else "OP"
                 val calendar = Calendar.getInstance()
                 val currentYear = calendar.get(Calendar.YEAR)
 
                 println(currentYear)
 
                 val claim = Claim(
-                    claimNumber = it.claimNumber,
-                    invoiceId = it.invoiceId,
+                    claimNumber = dto.claimNumber,
+                    invoiceId = dto.invoiceId,
                     memberNumber = familyNumber[0],
-                    memberName = it.memberName,
-                    providerCode = it.providerCode,
-                    providerName = it.providerName,
+                    memberName = dto.memberName,
+                    providerCode = dto.providerCode,
+                    providerName = dto.providerName,
                     beneficiaryCode = familyNumber[1],
                     benefitType = benefitType,
-                    invoiceDate = it.claimDate,
-                    invoiceNumber = it.invoiceNumber,
-                    totalAmount = it.totalAmount,
+                    invoiceDate = dto.claimDate,
+                    invoiceNumber = dto.invoiceNumber,
+                    totalAmount = dto.totalAmount,
                     year = currentYear.toString(),
-                    batchId = it.batchId
+                    batchId = dto.batchId
                 )
-                claimRepo.save(claim)
-                claims.add(claim)
-            }
+                val savedInvoice = claimRepo.save(claim)
 
-
-            return ApiResponse(success = true, data = claims, msg = "claim saved successfully")
+            return ApiResponse(success = true, data = savedInvoice, msg = "claim ${claim.id} saved successfully")
         }catch (ex: Exception){
             return ApiResponse(success = true, data = null, msg = "failed to save claim")
         }
