@@ -22,6 +22,16 @@ interface BeneficiaryRepo: JpaRepository<Beneficiaries, Long> {
     @Modifying
     @Query(value = "update Beneficiaries b set b.newEntry = false, b.lctCategoryId = :categoryId where b.memberNumber = :memberNo")
     fun updateNewEntry(@Param("memberNo") memberNo: String, @Param("categoryId") categoryId: Long)
+
+    @Modifying
+    @Query(value = "update Beneficiaries b set b.newEntry = :newEntry, b.updatedEntry = :updatedEntry where b.memberNumber = :memberNo")
+    fun updateNewEntryAndUpdateStatus(
+        @Param("newEntry") newEntry: Boolean,
+        @Param("updatedEntry") updatedEntry: Boolean,
+        @Param("memberNo") memberNo: String,
+
+    )
+
     @Modifying
     @Query(value = "update Beneficiaries b set b.updatedEntry = false where b.memberNumber = :memberNo")
     fun updateMemberStatus(@Param("memberNo") memberNo: String)

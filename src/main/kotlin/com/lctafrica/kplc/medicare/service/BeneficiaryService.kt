@@ -223,17 +223,22 @@ class BeneficiaryService(
             val categoryId = jobScaleRepo.findByScaleAndCompany(it.scale, it.company)
             val member = getLCTMemberDetails(it.memberNumber, categoryId.lctCategoryId.toLong())
 
-            val statusDTO = BeneficiaryStatusDTO(
-                beneficiaryIds = arrayListOf(member.data.id),
-                reason = if (it.status == "DEACTIVATED") "FORMER" else "ACTIVATE",
-                updateBy = it.createdBy,
-                status = it.status,
-                updateType = if (it.beneficiaryType == "PRINCIPAL") "FAMILY" else "INDIVIDUAL"
-            )
+            if(!member.success){
+                beneficiaryRepo.updateNewEntryAndUpdateStatus(newEntry = true, updatedEntry = false, it.memberNumber)
+            } else {
+                val statusDTO = BeneficiaryStatusDTO(
+                    beneficiaryIds = arrayListOf(member.data.id),
+                    reason = if (it.status == "DEACTIVATED") "FORMER" else "ACTIVATE",
+                    updateBy = it.createdBy,
+                    status = it.status,
+                    updateType = if (it.beneficiaryType == "PRINCIPAL") "FAMILY" else "INDIVIDUAL"
+                )
 
-            if(updateStaffStatusAPICall(statusDTO)){
-                beneficiaryRepo.updateMemberStatus(it.memberNumber)
+                if(updateStaffStatusAPICall(statusDTO)){
+                    beneficiaryRepo.updateMemberStatus(it.memberNumber)
+                }
             }
+
         }
 
     }

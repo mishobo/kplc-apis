@@ -18,10 +18,8 @@ spring:
       use-new-id-generator-mappings: false
 
 lct:
-  africa:
-    membership: https://api.lctafrica.net/api/v1/membership/create-member
-    membership2: https://api.lctafrica.net/api/v1/membership/beneficiaries
-    membership1: https://api.lctafrica.net/api/v1/membership/staged/beneficiary
-    membershipByCategoryId1: https://api.lctafrica.net/api/v1/membership/beneficiary/findByCategoryAndMemberNumber
-    membershipByCategoryId: https://api.lctafrica.net/api/v1/membership/beneficiary/findByCategoryAndMemberNumber
-    membershipStatusUpdate: https://api.lctafrica.net/api/v1/membership/beneficiaries/status/update
+  africa:  ##http://api.lctafrica.net
+    membership: http://api.lctafrica.net/api/v1/membership/beneficiaries
+    membership1: http://api.lctafrica.net/api/v1/membership/staged/beneficiary
+    membershipByCategoryId: http://api.lctafrica.net/api/v1/membership/beneficiary/findByCategoryAndMemberNumber
+    membershipStatusUpdate: http://api.lctafrica.net/api/v1/membership/beneficiaries/status/update
