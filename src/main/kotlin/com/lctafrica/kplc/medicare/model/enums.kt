@@ -1,6 +1,6 @@
 package com.lctafrica.kplc.medicare.model
 
 
-enum class Status {
+enum class MemberStatus {
         PENDING, PICKED, FAILED, REVERSED
 }

@@ -1,7 +1,5 @@
 package com.lctafrica.kplc.medicare.model
 
-import com.fasterxml.jackson.annotation.JsonFormat
-import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -55,7 +53,9 @@ data class Beneficiaries(
     val company: String,
     @Column(name = "lct_principal_id", nullable = true)
     val lctPrincipalId: Long? = 0,
-    val lctCategoryId: Long?
+    val lctCategoryId: Long?,
+    @Enumerated(EnumType.STRING)
+    val transmission: MemberStatus = MemberStatus.PENDING
 )
 @Entity
 @Table(name = "jobScale")

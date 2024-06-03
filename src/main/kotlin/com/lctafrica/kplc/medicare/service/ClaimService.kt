@@ -23,6 +23,7 @@ class ClaimService(
                 println("claim payload: $dto");
                 val invoice = claimRepo.findByInvoiceId(dto.invoiceId)
                 if(invoice.isPresent){
+                    println("${dto.invoiceId} invoice already received")
                     return ApiResponse(success = false, data = null, msg = "${dto.invoiceId} invoice already received")
                 }
 

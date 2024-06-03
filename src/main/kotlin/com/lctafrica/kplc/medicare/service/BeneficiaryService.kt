@@ -1,10 +1,7 @@
 package com.lctafrica.kplc.medicare.service
 
 import com.google.gson.Gson
-import com.lctafrica.kplc.medicare.model.Beneficiaries
-import com.lctafrica.kplc.medicare.model.BeneficiaryResponse
-import com.lctafrica.kplc.medicare.model.BeneficiaryStatusDTO
-import com.lctafrica.kplc.medicare.model.LctBeneficiaryDTO
+import com.lctafrica.kplc.medicare.model.*
 import com.lctafrica.kplc.medicare.repository.BeneficiaryRepo
 import com.lctafrica.kplc.medicare.repository.JobScaleRepo
 import org.springframework.beans.factory.annotation.Value
@@ -70,27 +67,36 @@ class BeneficiaryService(
     }
 
 
+
     @Scheduled(cron = "* * * * * ?")
     override fun uploadNewMembersToLCT(){
         val beneficiaries = beneficiaryRepo.findByNewEntryAndScaleIsNotNull(true)
 
         beneficiaries?.forEach {
-            val jobScale = jobScaleRepo.findByScaleAndCompany(it.scale, it.company)
-            val principalId = getLCTPrincipleId(it.memberNumber, jobScale.lctCategoryId.toLong())
-            println("principalId: $principalId")
-            val staff = LctBeneficiaryDTO(
-                categoryId = jobScale.lctCategoryId.toLong(),
-                name = it.memberName,
-                memberNumber = it.memberNumber,
-                dob = it.dob,
-                email = null,
-                nhifNumber = null,
-                gender = it.gender,
-                phoneNumber = it.phoneNo,
-                beneficiaryType = it.beneficiaryType,
-                principalId = principalId
-            )
-            apiCallForNewStaff(staff)
+            try {
+                println("member: ${it.memberNumber}")
+                val jobScale = jobScaleRepo.findByScaleAndCompany(it.scale, it.company)
+                beneficiaryRepo.updateMemberCategory(jobScale.lctCategoryId.toLong(), it.memberNumber)
+                val principalId = getLCTPrincipleId(it.memberNumber, jobScale.lctCategoryId.toLong())
+                println("principalId: $principalId")
+                val staff = LctBeneficiaryDTO(
+                    categoryId = jobScale.lctCategoryId.toLong(),
+                    name = it.memberName,
+                    memberNumber = it.memberNumber,
+                    dob = it.dob,
+                    email = null,
+                    nhifNumber = null,
+                    gender = it.gender,
+                    phoneNumber = it.phoneNo,
+                    beneficiaryType = it.beneficiaryType,
+                    principalId = principalId
+                )
+                apiCallForNewStaff(staff)
+            }catch (ex: Exception){
+                beneficiaryRepo.updateMemberTransmissionStatus(MemberStatus.FAILED, it.memberNumber)
+                println(ex.printStackTrace())
+            }
+
         }
     }
 
@@ -115,6 +121,7 @@ class BeneficiaryService(
             beneficiaryRepo.updateNewEntry(dto.memberNumber, dto.categoryId)
 
         } else {
+            println("check if member exists")
             val membershipClient = WebClient.builder().baseUrl(memberByCategoryIdAndMbrNo).build()
             val membershipResponse1 = membershipClient
                 .get()
@@ -129,8 +136,11 @@ class BeneficiaryService(
                 .block()
 
             val response = gson.fromJson(membershipResponse1.toString(), BeneficiaryResponse::class.java)
+            println(response)
             if (response.success){
                 beneficiaryRepo.updateNewEntry(dto.memberNumber, dto.categoryId)
+            }else {
+                beneficiaryRepo.updateMemberTransmissionStatus(MemberStatus.FAILED, dto.memberNumber)
             }
         }
     }
@@ -214,7 +224,7 @@ class BeneficiaryService(
 
         return memberShipResponse.success
     }
-    @Scheduled(cron = "* * * * * ?")
+//    @Scheduled(cron = "* * * * * ?")
     override fun pickUpdatedRecords() {
         val updatedStaff = beneficiaryRepo.findByUpdatedEntryAndScaleIsNotNull(true)
 
