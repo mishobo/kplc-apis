@@ -56,7 +56,7 @@ interface BeneficiaryRepo: JpaRepository<Beneficiaries, Long> {
         @Param("memberNo") memberNo: String
     )
 
-    fun findByUpdatedEntryAndScaleIsNotNull(newEntry: Boolean): List<Beneficiaries>?
+    fun findTop20ByUpdatedEntryAndScaleIsNotNull(newEntry: Boolean): List<Beneficiaries>?
 
 }
 

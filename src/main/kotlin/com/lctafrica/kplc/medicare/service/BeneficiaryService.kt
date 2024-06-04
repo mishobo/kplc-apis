@@ -236,32 +236,37 @@ class BeneficiaryService(
 
         return memberShipResponse.success
     }
-//    @Scheduled(cron = "* * * * * ?")
+    @Scheduled(cron = "* * * * * ?")
     override fun pickUpdatedRecords() {
-//        val updatedStaff = beneficiaryRepo.findByUpdatedEntryAndScaleIsNotNull(true)
-//
-//        updatedStaff?.forEach {
-//            println("updated: $it")
-//            val categoryId = jobScaleRepo.findByScaleAndCompany(it.scale, it.company)
-//            val member = getLCTMemberDetails(it.memberNumber, categoryId.lctCategoryId.toLong())
-//
-//            if(!member.success){
-//                beneficiaryRepo.updateNewEntryAndUpdateStatus(newEntry = true, updatedEntry = false, it.memberNumber)
-//            } else {
-//                val statusDTO = BeneficiaryStatusDTO(
-//                    beneficiaryIds = arrayListOf(member.data.id),
-//                    reason = if (it.status == "DEACTIVATED") "FORMER" else "ACTIVATE",
-//                    updateBy = it.createdBy,
-//                    status = it.status,
-//                    updateType = if (it.beneficiaryType == "PRINCIPAL") "FAMILY" else "INDIVIDUAL"
-//                )
-//
-//                if(updateStaffStatusAPICall(statusDTO)){
-//                    beneficiaryRepo.updateMemberStatus(it.memberNumber)
-//                }
-//            }
-//
-//        }
+        val updatedStaff = beneficiaryRepo.findTop20ByUpdatedEntryAndScaleIsNotNull(true)
+
+        updatedStaff?.forEach {
+            println("updated: $it")
+            val categoryId = jobScaleRepo.findByScaleAndCompany(it.scale, it.company)
+
+            if (categoryId.isPresent){
+                val category = categoryId.get()
+                val member = getLCTMemberDetails(it.memberNumber, category.lctCategoryId.toLong())
+
+                if(!member.success){
+                    beneficiaryRepo.updateNewEntryAndUpdateStatus(newEntry = true, updatedEntry = false, it.memberNumber)
+                } else {
+                    val statusDTO = BeneficiaryStatusDTO(
+                        beneficiaryIds = arrayListOf(member.data.id),
+                        reason = if (it.status == "DEACTIVATED") "FORMER" else "ACTIVATE",
+                        updateBy = it.createdBy,
+                        status = it.status,
+                        updateType = if (it.beneficiaryType == "PRINCIPAL") "FAMILY" else "INDIVIDUAL"
+                    )
+
+                    if(updateStaffStatusAPICall(statusDTO)){
+                        beneficiaryRepo.updateMemberStatus(it.memberNumber)
+                    }
+                }
+            }else{
+                beneficiaryRepo.updateMemberTransmissionStatus(MemberStatus.FAILED, it.memberNumber)
+            }
+        }
 
     }
 
