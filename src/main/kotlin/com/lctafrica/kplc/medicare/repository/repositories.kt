@@ -21,7 +21,7 @@ interface ClaimRepo: JpaRepository<Claim, Int> {
 @Repository
 interface BeneficiaryRepo: JpaRepository<Beneficiaries, Long> {
 
-    fun findByNewEntryAndScaleIsNotNull(newEntry: Boolean): List<Beneficiaries>?
+    fun findTop20ByNewEntryAndScaleIsNotNull(newEntry: Boolean): List<Beneficiaries>?
 
     @Modifying
     @Query(value = "update Beneficiaries b set b.newEntry = false, b.lctCategoryId = :categoryId where b.memberNumber = :memberNo")
@@ -62,5 +62,5 @@ interface BeneficiaryRepo: JpaRepository<Beneficiaries, Long> {
 
 interface JobScaleRepo: JpaRepository<JobScale, Long>{
 
-    fun findByScaleAndCompany(scale: String, company: String): JobScale
+    fun findByScaleAndCompany(scale: String, company: String): Optional<JobScale>
 }
