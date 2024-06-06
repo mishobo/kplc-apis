@@ -1,9 +1,6 @@
 package com.lctafrica.kplc.medicare.repository
 
-import com.lctafrica.kplc.medicare.model.Beneficiaries
-import com.lctafrica.kplc.medicare.model.Claim
-import com.lctafrica.kplc.medicare.model.JobScale
-import com.lctafrica.kplc.medicare.model.MemberStatus
+import com.lctafrica.kplc.medicare.model.*
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -39,8 +36,10 @@ interface BeneficiaryRepo: JpaRepository<Beneficiaries, Long> {
     )
 
     @Modifying
-    @Query(value = "update Beneficiaries b set b.updatedEntry = false where b.memberNumber = :memberNo")
-    fun updateMemberStatus(@Param("memberNo") memberNo: String)
+    @Query(value = "update Beneficiaries b set b.updatedEntry = false, transmission = :transmission where b.memberNumber = :memberNo")
+    fun updateMemberStatus(
+        @Param("transmission") transmission: MemberStatus,
+        @Param("memberNo") memberNo: String)
 
     @Modifying
     @Query(value = "update Beneficiaries b set b.lctCategoryId = :category where b.memberNumber = :memberNo")
@@ -56,7 +55,25 @@ interface BeneficiaryRepo: JpaRepository<Beneficiaries, Long> {
         @Param("memberNo") memberNo: String
     )
 
+    @Modifying
+    @Query(value = "update Beneficiaries b set b.newEntry = false,  b.updatedEntry = false, b.transmission = :transmission, transmissionComment = :transmissionComment where b.memberNumber = :memberNo")
+    fun commentsForNewBeneficiaryTransmission(
+        @Param("transmission") transmission: MemberStatus,
+        @Param("transmissionComment") transmissionComment: String,
+        @Param("memberNo") memberNo: String
+    )
+
     fun findTop20ByUpdatedEntryAndScaleIsNotNull(newEntry: Boolean): List<Beneficiaries>?
+
+
+    @Query(value = "select * from Beneficiaries b where b.member_number like concat('%',:familyNo,'%') and b.member_name" +
+            " = :memberName and b.beneficiary_type = :beneficiaryType and b.member_number != :memberNumber", nativeQuery = true)
+    fun findDuplicateDependant(
+        @Param("familyNo") familyNo: String,
+        @Param("memberName") memberName: String,
+        @Param("beneficiaryType") beneficiaryType: String,
+        @Param("memberNumber") memberNumber: String
+    ): List<Beneficiaries>
 
 }
 

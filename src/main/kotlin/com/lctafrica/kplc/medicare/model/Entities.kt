@@ -39,7 +39,8 @@ data class Beneficiaries(
     val createdBy: String,
     val createdDate: String,
     val memberNumber: String,
-    val beneficiaryType: String,
+    @Enumerated(EnumType.STRING)
+    val beneficiaryType: BeneficiaryType,
     val nationalId: String?,
     val memberName: String,
     val gender: String,
@@ -55,7 +56,8 @@ data class Beneficiaries(
     val lctPrincipalId: Long? = 0,
     val lctCategoryId: Long?,
     @Enumerated(EnumType.STRING)
-    val transmission: MemberStatus = MemberStatus.PENDING
+    val transmission: MemberStatus = MemberStatus.PENDING,
+    val transmissionComment: String?
 )
 @Entity
 @Table(name = "jobScale")

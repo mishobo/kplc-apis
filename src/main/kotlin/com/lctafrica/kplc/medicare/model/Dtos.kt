@@ -1,6 +1,8 @@
 package com.lctafrica.kplc.medicare.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -41,7 +43,8 @@ data class LctBeneficiaryDTO(
     val gender: String,
     val phoneNumber: String?,
     val email: String?,
-    val beneficiaryType: String,
+    @Enumerated(EnumType.STRING)
+    val beneficiaryType: BeneficiaryType,
     val principalId: Long
 )
 

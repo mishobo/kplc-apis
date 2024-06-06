@@ -75,34 +75,51 @@ class BeneficiaryService(
         beneficiaries?.forEach {
             try {
                 println("member: ${it.memberNumber}")
-                val jobScale = jobScaleRepo.findByScaleAndCompany(it.scale, it.company)
-                if (jobScale.isPresent){
-                    val scale = jobScale.get()
-                    beneficiaryRepo.updateMemberCategory(scale.lctCategoryId.toLong(), it.memberNumber)
-                    val principalId = getLCTPrincipleId(it.memberNumber, scale.lctCategoryId.toLong())
-                    println("principalId: $principalId")
-                    val staff = LctBeneficiaryDTO(
-                        categoryId = scale.lctCategoryId.toLong(),
-                        name = it.memberName,
-                        memberNumber = it.memberNumber,
-                        dob = it.dob,
-                        email = null,
-                        nhifNumber = null,
-                        gender = it.gender,
-                        phoneNumber = it.phoneNo,
-                        beneficiaryType = it.beneficiaryType,
-                        principalId = principalId
-                    )
-                    apiCallForNewStaff(staff)
-                }else {
-                    beneficiaryRepo.updateMemberTransmissionStatus(MemberStatus.FAILED, it.memberNumber)
-                }
+                val familyNo = it.memberNumber.split("-")
+                println("family no: ${familyNo[0]}")
+                println("member name: ${it.memberName}")
+                val existingBeneficiaries = beneficiaryRepo.findDuplicateDependant(familyNo = familyNo[0], memberName = it.memberName, "CHILD", memberNumber = it.memberNumber)
 
+//                if (existingBeneficiaries.isNotEmpty()){
+//                    println("Duplicate entry ${it.memberNumber}")
+//                    beneficiaryRepo.commentsForNewBeneficiaryTransmission(transmission = MemberStatus.FAILED, transmissionComment = "Duplicate entry", memberNo = it.memberNumber)
+//                } else {
+//                    println("Empty entry ${it.memberNumber}")
+//                }
+
+                if (existingBeneficiaries.isNotEmpty()){
+                    println("Duplicate entry ${it.memberNumber}")
+                    beneficiaryRepo.commentsForNewBeneficiaryTransmission(transmission = MemberStatus.FAILED, transmissionComment = "Duplicate entry", memberNo = it.memberNumber)
+                } else {
+                    val jobScale = jobScaleRepo.findByScaleAndCompany(it.scale, it.company)
+                    if (jobScale.isPresent){
+                        val scale = jobScale.get()
+                        beneficiaryRepo.updateMemberCategory(scale.lctCategoryId.toLong(), it.memberNumber)
+                        val principalId = getLCTPrincipleId(it.memberNumber, scale.lctCategoryId.toLong())
+                        println("principalId: $principalId")
+                        val staff = LctBeneficiaryDTO(
+                            categoryId = scale.lctCategoryId.toLong(),
+                            name = it.memberName,
+                            memberNumber = it.memberNumber,
+                            dob = it.dob,
+                            email = null,
+                            nhifNumber = null,
+                            gender = it.gender,
+                            phoneNumber = it.phoneNo,
+                            beneficiaryType = it.beneficiaryType,
+                            principalId = principalId
+                        )
+                        apiCallForNewStaff(staff)
+                    }else {
+                        println("Missing Job scale: ${it.memberNumber}")
+                        beneficiaryRepo.commentsForNewBeneficiaryTransmission(MemberStatus.FAILED, transmissionComment = "Missing Job scale",it.memberNumber)
+                    }
+                }
 
             }catch (ex: Exception){
                 println(MemberStatus.FAILED)
                 println(it.memberNumber)
-                beneficiaryRepo.updateMemberTransmissionStatus(MemberStatus.FAILED, it.memberNumber)
+                beneficiaryRepo.commentsForNewBeneficiaryTransmission(MemberStatus.FAILED, transmissionComment = "An error occurred", it.memberNumber)
                 println(ex.printStackTrace())
             }
 
@@ -256,11 +273,11 @@ class BeneficiaryService(
                         reason = if (it.status == "DEACTIVATED") "FORMER" else "ACTIVATE",
                         updateBy = it.createdBy,
                         status = it.status,
-                        updateType = if (it.beneficiaryType == "PRINCIPAL") "FAMILY" else "INDIVIDUAL"
+                        updateType = if (it.beneficiaryType == BeneficiaryType.PRINCIPAL) "FAMILY" else "INDIVIDUAL"
                     )
 
                     if(updateStaffStatusAPICall(statusDTO)){
-                        beneficiaryRepo.updateMemberStatus(it.memberNumber)
+                        beneficiaryRepo.updateMemberStatus(MemberStatus.PICKED ,it.memberNumber)
                     }
                 }
             }else{
