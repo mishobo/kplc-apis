@@ -66,12 +66,12 @@ interface BeneficiaryRepo: JpaRepository<Beneficiaries, Long> {
     fun findTop20ByUpdatedEntryAndScaleIsNotNull(newEntry: Boolean): List<Beneficiaries>?
 
 
-    @Query(value = "select * from Beneficiaries b where b.member_number like concat('%',:familyNo,'%') and b.member_name" +
-            " = :memberName and b.beneficiary_type = :beneficiaryType and b.member_number != :memberNumber", nativeQuery = true)
+    @Query(value = "select b from Beneficiaries b where b.memberNumber like concat('%',:familyNo,'%') and b.memberName = :memberName and b.beneficiaryType in (:beneficiaryType , :beneficiaryType1) and b.memberNumber != :memberNumber")
     fun findDuplicateDependant(
         @Param("familyNo") familyNo: String,
         @Param("memberName") memberName: String,
-        @Param("beneficiaryType") beneficiaryType: String,
+        @Param("beneficiaryType") beneficiaryType: BeneficiaryType,
+        @Param("beneficiaryType1") beneficiaryType1: BeneficiaryType,
         @Param("memberNumber") memberNumber: String
     ): List<Beneficiaries>
 

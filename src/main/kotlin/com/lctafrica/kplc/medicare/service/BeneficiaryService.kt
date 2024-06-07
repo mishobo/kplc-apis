@@ -31,6 +31,9 @@ class BeneficiaryService(
     @Value("\${lct.africa.membershipStatusUpdate}")
     lateinit var membershipStatusUpdate: String
 
+    @Value("\${lct.africa.membershipUpdate}")
+    lateinit var membershipUpdate: String
+
     val gson = Gson()
 
     override fun getNewBeneficiaries(): ResponseEntity<List<Beneficiaries>> {
@@ -78,14 +81,8 @@ class BeneficiaryService(
                 val familyNo = it.memberNumber.split("-")
                 println("family no: ${familyNo[0]}")
                 println("member name: ${it.memberName}")
-                val existingBeneficiaries = beneficiaryRepo.findDuplicateDependant(familyNo = familyNo[0], memberName = it.memberName, "CHILD", memberNumber = it.memberNumber)
-
-//                if (existingBeneficiaries.isNotEmpty()){
-//                    println("Duplicate entry ${it.memberNumber}")
-//                    beneficiaryRepo.commentsForNewBeneficiaryTransmission(transmission = MemberStatus.FAILED, transmissionComment = "Duplicate entry", memberNo = it.memberNumber)
-//                } else {
-//                    println("Empty entry ${it.memberNumber}")
-//                }
+                val existingBeneficiaries = beneficiaryRepo.findDuplicateDependant(familyNo = familyNo[0], memberName = it.memberName,
+                    beneficiaryType = BeneficiaryType.CHILD, beneficiaryType1 = BeneficiaryType.SPOUSE, memberNumber = it.memberNumber)
 
                 if (existingBeneficiaries.isNotEmpty()){
                     println("Duplicate entry ${it.memberNumber}")
@@ -145,7 +142,7 @@ class BeneficiaryService(
         if (memberShipResponse.success){
             println("principle id: " + memberShipResponse.data.id)
             beneficiaryRepo.updateNewEntry(dto.memberNumber, dto.categoryId)
-            beneficiaryRepo.updateMemberTransmissionStatus(MemberStatus.PICKED, dto.memberNumber)
+            beneficiaryRepo.commentsForNewBeneficiaryTransmission(MemberStatus.PICKED, "sent successfully",dto.memberNumber)
 
         } else {
             println("check if member exists")
@@ -253,6 +250,8 @@ class BeneficiaryService(
 
         return memberShipResponse.success
     }
+
+
     @Scheduled(cron = "* * * * * ?")
     override fun pickUpdatedRecords() {
         val updatedStaff = beneficiaryRepo.findTop20ByUpdatedEntryAndScaleIsNotNull(true)
@@ -264,17 +263,32 @@ class BeneficiaryService(
             if (categoryId.isPresent){
                 val category = categoryId.get()
                 val member = getLCTMemberDetails(it.memberNumber, category.lctCategoryId.toLong())
-
                 if(!member.success){
                     beneficiaryRepo.updateNewEntryAndUpdateStatus(newEntry = true, updatedEntry = false, it.memberNumber)
                 } else {
                     val statusDTO = BeneficiaryStatusDTO(
                         beneficiaryIds = arrayListOf(member.data.id),
                         reason = if (it.status == "DEACTIVATED") "FORMER" else "ACTIVATE",
-                        updateBy = it.createdBy,
+                        updateBy = if(it.createdBy.isNullOrBlank()) "interface" else it.createdBy ,
                         status = it.status,
                         updateType = if (it.beneficiaryType == BeneficiaryType.PRINCIPAL) "FAMILY" else "INDIVIDUAL"
                     )
+
+                    val updateDto = BeneficiaryUpdate(
+                        name = it.memberName,
+                        id = member.data.id,
+                        dob = it.dob,
+                        phoneNumber = it.phoneNo,
+                        email = null,
+                        reason = "member update",
+                        canUseBiometrics = true,
+                        memberNumber = it.memberNumber,
+                        user = if(it.createdBy.isNullOrBlank()) "interface" else it.createdBy
+                    )
+
+                    if (it.status == "ACTIVE"){
+                        updateBeneficiaryAPICall(updateDto)
+                    }
 
                     if(updateStaffStatusAPICall(statusDTO)){
                         beneficiaryRepo.updateMemberStatus(MemberStatus.PICKED ,it.memberNumber)
@@ -285,6 +299,25 @@ class BeneficiaryService(
             }
         }
 
+    }
+
+    fun updateBeneficiaryAPICall(dto: BeneficiaryUpdate): Boolean{
+        val gson = Gson()
+        var staffJson = gson.toJson(dto)
+        println("staff json payload :$staffJson" )
+
+        val kplcClient = WebClient.builder().baseUrl(membershipUpdate).build()
+        val remoteResponse = kplcClient.post()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .body(Mono.just(staffJson), String::class.java)
+            .retrieve()
+            .bodyToMono(String::class.java)
+            .block()
+
+        println(remoteResponse)
+        val memberShipResponse = gson.fromJson(remoteResponse.toString(), BeneficiaryResponse::class.java)
+
+        return memberShipResponse.success
     }
 
 }

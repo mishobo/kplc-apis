@@ -23,3 +23,4 @@ lct:
     membership1: http://api.lctafrica.net/api/v1/membership/staged/beneficiary
     membershipByCategoryId: http://api.lctafrica.net/api/v1/membership/beneficiary/findByCategoryAndMemberNumber
     membershipStatusUpdate: http://api.lctafrica.net/api/v1/membership/beneficiaries/status/update
+    membershipUpdate: http://api.lctafrica.net/api/v1/membership/updateMember

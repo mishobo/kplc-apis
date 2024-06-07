@@ -67,7 +67,19 @@ data class Beneficiary(
 data class BeneficiaryStatusDTO(
     val beneficiaryIds: List<Long>,
     val reason: String,
-    val updateBy: String,
+    val updateBy: String?,
     val status: String,
     val updateType: String
+)
+
+data class BeneficiaryUpdate(
+    val name: String,
+    val id: Long,
+    val dob: String,
+    val phoneNumber: String?,
+    val email: String?,
+    val reason: String,
+    val canUseBiometrics: Boolean,
+    val memberNumber: String,
+    val user: String?
 )

@@ -36,7 +36,7 @@ data class Beneficiaries(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
-    val createdBy: String,
+    val createdBy: String?,
     val createdDate: String,
     val memberNumber: String,
     @Enumerated(EnumType.STRING)
