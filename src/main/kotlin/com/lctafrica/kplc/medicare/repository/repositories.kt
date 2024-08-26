@@ -81,3 +81,14 @@ interface JobScaleRepo: JpaRepository<JobScale, Long>{
 
     fun findByScaleAndCompany(scale: String, company: String): Optional<JobScale>
 }
+
+interface MoneyManagementRepo: JpaRepository<MoneyManagement, Long>{
+    fun findByStatus(status: Boolean): Optional<List<MoneyManagement>>
+
+//    @Modifying
+//    @Query(value = "update MoneyManagement m set m.status = false,  b.updatedEntry = false, b.transmission = :transmission where b.memberNumber = :memberNo")
+//    fun updateMemberTransmissionStatus(
+//        @Param("transmission") transmission: MemberStatus,
+//        @Param("memberNo") memberNo: String
+//    )
+}

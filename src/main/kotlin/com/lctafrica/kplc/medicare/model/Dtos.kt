@@ -40,6 +40,7 @@ data class LctBeneficiaryDTO(
     val memberNumber: String,
     val nhifNumber: String?,
     val dob: String,
+    val joinDate: String,
     val gender: String,
     val phoneNumber: String?,
     val email: String?,
@@ -82,4 +83,11 @@ data class BeneficiaryUpdate(
     val canUseBiometrics: Boolean,
     val memberNumber: String,
     val user: String?
+)
+
+data class TopUp(
+    val topUpReason: String,
+    val topUpAmount: BigDecimal,
+    val topUpBy: String,
+    val id: Long
 )

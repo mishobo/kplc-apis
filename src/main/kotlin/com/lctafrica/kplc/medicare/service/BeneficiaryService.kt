@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
+import java.time.LocalDate
 
 @Service
 @Transactional
@@ -93,20 +94,28 @@ class BeneficiaryService(
                         val scale = jobScale.get()
                         beneficiaryRepo.updateMemberCategory(scale.lctCategoryId.toLong(), it.memberNumber)
                         val principalId = getLCTPrincipleId(it.memberNumber, scale.lctCategoryId.toLong())
-                        println("principalId: $principalId")
-                        val staff = LctBeneficiaryDTO(
-                            categoryId = scale.lctCategoryId.toLong(),
-                            name = it.memberName,
-                            memberNumber = it.memberNumber,
-                            dob = it.dob,
-                            email = null,
-                            nhifNumber = null,
-                            gender = it.gender,
-                            phoneNumber = it.phoneNo,
-                            beneficiaryType = it.beneficiaryType,
-                            principalId = principalId
-                        )
-                        apiCallForNewStaff(staff)
+
+                        // save the error if principle does not exist
+//                        if (principalId.toInt() == 0){
+//                            println("principle does not exist: ${it.memberNumber}")
+//                            beneficiaryRepo.commentsForNewBeneficiaryTransmission(MemberStatus.FAILED, transmissionComment = "principle does not exist",it.memberNumber)
+//                        } else {
+                            println("principalId: $principalId")
+                            val staff = LctBeneficiaryDTO(
+                                categoryId = scale.lctCategoryId.toLong(),
+                                name = it.memberName,
+                                memberNumber = it.memberNumber,
+                                dob = it.dob,
+                                joinDate = LocalDate.now().toString(),
+                                email = null,
+                                nhifNumber = null,
+                                gender = it.gender,
+                                phoneNumber = it.phoneNo,
+                                beneficiaryType = it.beneficiaryType,
+                                principalId = principalId
+                            )
+                            apiCallForNewStaff(staff)
+//                        }
                     }else {
                         println("Missing Job scale: ${it.memberNumber}")
                         beneficiaryRepo.commentsForNewBeneficiaryTransmission(MemberStatus.FAILED, transmissionComment = "Missing Job scale",it.memberNumber)
@@ -266,13 +275,6 @@ class BeneficiaryService(
                 if(!member.success){
                     beneficiaryRepo.updateNewEntryAndUpdateStatus(newEntry = true, updatedEntry = false, it.memberNumber)
                 } else {
-                    val statusDTO = BeneficiaryStatusDTO(
-                        beneficiaryIds = arrayListOf(member.data.id),
-                        reason = if (it.status == "DEACTIVATED") "FORMER" else "ACTIVATE",
-                        updateBy = if(it.createdBy.isNullOrBlank()) "interface" else it.createdBy ,
-                        status = it.status,
-                        updateType = if (it.beneficiaryType == BeneficiaryType.PRINCIPAL) "FAMILY" else "INDIVIDUAL"
-                    )
 
                     val updateDto = BeneficiaryUpdate(
                         name = it.memberName,
@@ -290,6 +292,13 @@ class BeneficiaryService(
                         updateBeneficiaryAPICall(updateDto)
                     }
 
+                    val statusDTO = BeneficiaryStatusDTO(
+                        beneficiaryIds = arrayListOf(member.data.id),
+                        reason = if (it.status == "DEACTIVATED") "FORMER" else "ACTIVATE",
+                        updateBy = if(it.createdBy.isNullOrBlank()) "interface" else it.createdBy ,
+                        status = it.status,
+                        updateType = if (it.beneficiaryType == BeneficiaryType.PRINCIPAL) "FAMILY" else "INDIVIDUAL"
+                    )
                     if(updateStaffStatusAPICall(statusDTO)){
                         beneficiaryRepo.updateMemberStatus(MemberStatus.PICKED ,it.memberNumber)
                     }

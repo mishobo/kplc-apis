@@ -21,3 +21,7 @@ interface IJobScales {
 
     fun getAllJobScaleMappings(): ResponseEntity<List<JobScale>>
 }
+
+interface  TopUpService {
+    fun sendToLCT()
+}
