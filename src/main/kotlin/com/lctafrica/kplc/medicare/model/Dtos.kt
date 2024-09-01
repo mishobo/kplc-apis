@@ -91,3 +91,18 @@ data class TopUp(
     val topUpBy: String,
     val id: Long
 )
+
+data class BenefitResponse(
+    val success: Boolean,
+    val msg: String,
+    val data: List<BenefitBeneficiary>
+)
+
+data class BenefitBeneficiary (
+    val benefitBeneficiaryId: Long,
+    val aggregateId: String,
+    val balance: BigDecimal,
+    val benefitName: String,
+    val catalogId: Long,
+    val initialLimit: BigDecimal
+)

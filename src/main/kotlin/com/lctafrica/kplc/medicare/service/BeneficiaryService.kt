@@ -133,7 +133,6 @@ class BeneficiaryService(
     }
 
     fun apiCallForNewStaff(dto: LctBeneficiaryDTO){
-        val gson = Gson()
         var staffJson = gson.toJson(dto)
         println("staff json payload :$staffJson" )
 
