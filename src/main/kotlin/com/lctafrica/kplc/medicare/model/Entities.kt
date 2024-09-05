@@ -115,7 +115,7 @@ data class MoneyAdditions(
 )
 
 @Entity
-@Table(name = "stg_kplc_frint_rmvl ")
+@Table(name = "stg_kplc_frint_rmvl")
 data class FingerPrints(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -130,8 +130,8 @@ data class FingerPrints(
     val reason: String,
     @Column(name = "USER_ID", nullable = false)
     val userId: String,
-    @Column(name = "PICKED_STATUS", nullable = false)
-    val pickedStatus: String,
+    @Column(name = "PICKED_STATUS", nullable = true)
+    val pickedStatus: Int,
     @Column(name = "STATUS_DATE", nullable = false)
     val statusDate: LocalDate,
     @Column(name = "INSERT_DATE", nullable = false)
@@ -152,14 +152,14 @@ data class MoneyManagement(
     val smartBenefit: String,
     @Column(name = "AMOUNT", nullable = false)
     val amount: BigDecimal,
-    @Column(name = "STATUS", nullable = false)
-    val status: Boolean = false,
+    @Column(name = "STATUS", nullable = true)
+    val status: String,
     @Column(name = "user_name", nullable = false)
     val userName: String,
     @Column(name = "done_date", nullable = false)
     val doneDate: String,
     @Column(name = "smart_picked_date", nullable = false)
-    val smartPickedDate: Boolean = false,
+    val smartPickedDate: String,
     @Column(name = "reasons", nullable = false)
     val reason: String,
     @Column(name = "done_status", nullable = false)

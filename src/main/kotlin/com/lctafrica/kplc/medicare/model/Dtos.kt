@@ -106,3 +106,9 @@ data class BenefitBeneficiary (
     val catalogId: Long,
     val initialLimit: BigDecimal
 )
+
+data class TopUpResponse (
+    val success: Boolean,
+    val msg: String,
+    val data: Boolean
+)

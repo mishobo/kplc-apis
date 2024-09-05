@@ -83,12 +83,28 @@ interface JobScaleRepo: JpaRepository<JobScale, Long>{
 }
 
 interface MoneyManagementRepo: JpaRepository<MoneyManagement, Long>{
-    fun findByStatus(status: Boolean): Optional<List<MoneyManagement>>
+    fun findByDoneStatus(status: String): Optional<List<MoneyManagement>>
 
-//    @Modifying
-//    @Query(value = "update MoneyManagement m set m.status = false,  b.updatedEntry = false, b.transmission = :transmission where b.memberNumber = :memberNo")
-//    fun updateMemberTransmissionStatus(
-//        @Param("transmission") transmission: MemberStatus,
-//        @Param("memberNo") memberNo: String
-//    )
+    @Modifying
+    @Query(value = "update MoneyManagement m set m.doneStatus = :doneStatus where m.staffNr = :memberNo")
+    fun updateTopUpStatus(
+        @Param("doneStatus") doneStatus: String,
+        @Param("memberNo") memberNo: String
+    )
+}
+
+interface FingerPrintRepo: JpaRepository<FingerPrints, Long>{
+
+    fun findByPickedStatus(pickedStatus: Int): Optional<List<FingerPrints>>
+
+    @Modifying
+    @Query(value = "update FingerPrints f set f.pickedStatus = :pickedStatus where f.staffNr = :staffNr and f.benCode = :benCode")
+    fun updateFingerPrintStatus(
+        @Param("pickedStatus") pickedStatus: Int,
+        @Param("staffNr") staffNr: String,
+        @Param("benCode") benCode: String
+    )
+
+
+
 }

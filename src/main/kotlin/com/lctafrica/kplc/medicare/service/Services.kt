@@ -25,3 +25,8 @@ interface IJobScales {
 interface  TopUpService {
     fun sendToLCT()
 }
+
+interface FingerPrintService {
+
+    fun detachFingerPrint()
+}
