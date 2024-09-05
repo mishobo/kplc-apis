@@ -12,8 +12,11 @@ import org.springframework.transaction.annotation.Transactional
 class JobScaleService (
     val jobScaleRepo: JobScaleRepo
 ): IJobScales {
+
+
     override fun getAllJobScaleMappings(): ResponseEntity<List<JobScale>> {
         val mappedJobScale = jobScaleRepo.findAll()
         return ResponseEntity(mappedJobScale, HttpStatus.OK)
     }
+
 }

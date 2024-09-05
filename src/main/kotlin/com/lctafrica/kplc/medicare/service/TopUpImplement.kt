@@ -19,14 +19,13 @@ class TopUpImplement(
 
     private val gson = Gson()
 
-//    @Scheduled(cron = "* * * * * ?")
+    @Scheduled(cron = "* * * * * ?")
     override fun sendToLCT() {
         println("money management job")
         val topUps = moneyManagementRepo.findByDoneStatus("0")
         if (topUps.isPresent) {
             val money = topUps.get()
             money.forEach { moneyManagement ->
-//                Thread{
                 try {
                     val memberNumber = moneyManagement.staffNr.plus("-00")
                     val benefitId = getBenefitId(memberNumber)
@@ -66,8 +65,6 @@ class TopUpImplement(
                     println("There is no benefit 3")
                     moneyManagementRepo.updateTopUpStatus("2", moneyManagement.staffNr)
                 }
-
-//                }.start()
             }
         }
     }

@@ -1,7 +1,6 @@
 package com.lctafrica.kplc.medicare.service
 
 import com.google.gson.Gson
-import com.lctafrica.kplc.medicare.model.BenefitResponse
 import com.lctafrica.kplc.medicare.model.TopUpResponse
 import com.lctafrica.kplc.medicare.repository.FingerPrintRepo
 import org.springframework.scheduling.annotation.Scheduled
