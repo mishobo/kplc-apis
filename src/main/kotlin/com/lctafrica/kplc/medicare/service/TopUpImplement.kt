@@ -89,7 +89,8 @@ class TopUpImplement(
     }
 
     private fun getBenefitId(memberNumber: String): BenefitResponse {
-        val claimsClient = WebClient.builder().baseUrl("http://localhost:8088/api/v1/payer/getBenefitBeneficiary").build()
+//        val claimsClient = WebClient.builder().baseUrl("http://localhost:8088/api/v1/payer/getBenefitBeneficiary").build()
+        val claimsClient = WebClient.builder().baseUrl("http://api.lctafrica.net/api/v1/payer/getBenefitBeneficiary").build()
         val benefitResponse = claimsClient
             .get()
             .uri { u ->
