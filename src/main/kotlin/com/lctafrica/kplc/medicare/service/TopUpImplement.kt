@@ -21,7 +21,7 @@ class TopUpImplement(
 
     @Scheduled(cron = "* * * * * ?")
     override fun sendToLCT() {
-        println("money management job")
+//        println("money management job")
         val topUps = moneyManagementRepo.findByDoneStatus("0")
         if (topUps.isPresent) {
             val money = topUps.get()
@@ -70,11 +70,11 @@ class TopUpImplement(
     }
 
     private fun apiToLCT(data: TopUp): Boolean {
-        println("top up payload $data")
+//        println("top up payload $data")
         val dataJson = gson.toJson(data)
-        println("staff json payload :$dataJson" )
+//        println("staff json payload :$dataJson" )
 //        val kplcClient = WebClient.builder().baseUrl("http://localhost:8088/api/v1/benefit/topUpBenefit").build()
-        val kplcClient = WebClient.builder().baseUrl("http://api.lctafrica.net/api/v1/benefit/topUpBenefit").build()
+        val kplcClient = WebClient.builder().baseUrl("http://192.168.0.70:8088/api/v1/benefit/topUpBenefit").build()
         val remoteResponse = kplcClient.post()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .body(Mono.just(dataJson), String::class.java)
@@ -90,7 +90,7 @@ class TopUpImplement(
 
     private fun getBenefitId(memberNumber: String): BenefitResponse {
 //        val claimsClient = WebClient.builder().baseUrl("http://localhost:8088/api/v1/payer/getBenefitBeneficiary").build()
-        val claimsClient = WebClient.builder().baseUrl("http://api.lctafrica.net/api/v1/payer/getBenefitBeneficiary").build()
+        val claimsClient = WebClient.builder().baseUrl("http://192.168.0.70:8088/api/v1/payer/getBenefitBeneficiary").build()
         val benefitResponse = claimsClient
             .get()
             .uri { u ->

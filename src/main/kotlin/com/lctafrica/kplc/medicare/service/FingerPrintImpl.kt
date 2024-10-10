@@ -19,7 +19,7 @@ class FingerPrintServiceImpl
 
     @Scheduled(cron = "* * * * * ?")
     override fun detachFingerPrint() {
-        println("detachFingerPrint")
+//        println("detachFingerPrint")
         val prints = fingerPrintRepo.findByPickedStatus(0)
         if(prints.isPresent){
             val fingerPrints = prints.get()

@@ -164,6 +164,9 @@ data class MoneyManagement(
     val reason: String,
     @Column(name = "done_status", nullable = false)
     val doneStatus: String,
+
+    val pickedStatus: Boolean = false
+
 )
 
 

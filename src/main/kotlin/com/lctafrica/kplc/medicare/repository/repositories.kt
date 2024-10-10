@@ -13,6 +13,9 @@ interface ClaimRepo: JpaRepository<Claim, Int> {
 
     fun findByInvoiceId(invoiceId: Long): Optional<Claim>
 
+    @Query(value = "select distinct invoice_number from claim where invoice_number = :invoiceNumber and provider_code = :providerCode", nativeQuery = true)
+    fun findByInvoiceNumberAndProviderCode(invoiceNumber: String, providerCode: String): String?
+
 }
 
 @Repository
@@ -83,7 +86,9 @@ interface JobScaleRepo: JpaRepository<JobScale, Long>{
 }
 
 interface MoneyManagementRepo: JpaRepository<MoneyManagement, Long>{
-    fun findByDoneStatus(status: String): Optional<List<MoneyManagement>>
+
+
+    fun findByDoneStatus(doneStatus: String): Optional<List<MoneyManagement>>
 
     @Modifying
     @Query(value = "update MoneyManagement m set m.doneStatus = :doneStatus where m.staffNr = :memberNo")

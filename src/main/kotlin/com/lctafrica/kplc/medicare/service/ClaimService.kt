@@ -22,10 +22,10 @@ class ClaimService(
         try {
 
                 println("claim payload: $dto");
-                val invoice = claimRepo.findByInvoiceId(dto.invoiceId)
-                if(invoice.isPresent){
-                    println("${dto.invoiceId} invoice already received")
-                    return ApiResponse(success = false, data = null, msg = "${dto.invoiceId} invoice already received")
+                val invoice = claimRepo.findByInvoiceNumberAndProviderCode(dto.invoiceNumber, dto.providerCode)
+                if(invoice != null){
+                    println("${dto.invoiceNumber} invoice already received")
+                    return ApiResponse(success = false, data = null, msg = "${dto.invoiceNumber} invoice already received")
                 }
 
                 val familyNumber = dto.memberNumber.split("-")
@@ -54,16 +54,17 @@ class ClaimService(
 
             return ApiResponse(success = true, data = savedInvoice, msg = "claim ${claim.id} saved successfully")
         }catch (ex: Exception){
-            return ApiResponse(success = true, data = null, msg = "failed to save claim")
+            println(ex.printStackTrace())
+            return ApiResponse(success = false, data = null, msg = "failed to save claim")
         }
     }
     override fun findAllClaims(): ResponseEntity<List<Claim>> {
         val claims = claimRepo.findAll()
 
-        if (claims.isNotEmpty()){
-            return ResponseEntity(claims, HttpStatus.OK)
+        return if (claims.isNotEmpty()){
+            ResponseEntity(claims, HttpStatus.OK)
         } else {
-            return ResponseEntity(claims, HttpStatus.OK)
+            ResponseEntity(claims, HttpStatus.OK)
         }
     }
 

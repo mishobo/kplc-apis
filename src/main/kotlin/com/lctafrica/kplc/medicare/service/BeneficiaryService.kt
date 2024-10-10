@@ -74,7 +74,7 @@ class BeneficiaryService(
 
     @Scheduled(cron = "* * * * * ?")
     override fun uploadNewMembersToLCT(){
-        println("uploadNewMembersToLCT")
+//        println("uploadNewMembersToLCT")
         val beneficiaries = beneficiaryRepo.findTop20ByNewEntryAndScaleIsNotNull(true)
 
         beneficiaries?.forEach {
@@ -263,7 +263,7 @@ class BeneficiaryService(
 
     @Scheduled(cron = "* * * * * ?")
     override fun pickUpdatedRecords() {
-        println("pickUpdatedRecords")
+//        println("pickUpdatedRecords")
         val updatedStaff = beneficiaryRepo.findTop20ByUpdatedEntryAndScaleIsNotNull(true)
 
         updatedStaff?.forEach {
